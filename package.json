@@ -4,8 +4,8 @@
   "main": "agendaTelefonica.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node agendaTelefonica.js",
-    "dev": "nodemon agendaTelefonica.js"
+    "start": "node iniciando.js",
+    "dev": "nodemon iniciando.js"
   },
   "author": "",
   "license": "ISC",

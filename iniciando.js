@@ -1,6 +1,9 @@
 const express = require('express');
-const app = express();
 
+const app = express();
+const cors = require("cors");
+app.use(express.static('dist'))
+app.use(cors());
 app.use(express.json()) // This middleware is used to parse the JSON data sent to the server
 
 
@@ -62,6 +65,7 @@ app.post('/api/notes', (request, response) => {
   console.log(note)
   response.json(note)   // The response is sent back to the client as a JSON object
 })
+
 
 
 const PORT = 4000
