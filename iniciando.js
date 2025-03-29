@@ -1,29 +1,14 @@
+require("dotenv").config(); // This line loads environment variables from a .env file into process.env
 const express = require('express');
 
+const cors = require('cors');
+const morgan = require('morgan');
+
 const app = express();
-const cors = require("cors");
 app.use(express.static('dist'))
 app.use(cors());
 app.use(express.json()) // This middleware is used to parse the JSON data sent to the server
-
-
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    important: true
-  },
-  {
-    id: 2,
-    content: "Browser can execute only JavaScript",
-    important: false
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true
-  }
-]
+const Note = require('./models/note.js')
 
 
 
@@ -35,7 +20,10 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/notes', (request, response) => {
-  response.json(notes) // send the notes array as a JSON response
+  Note.find({})
+  .then(notes => {
+    response.json(notes) // send the notes array as a JSON response
+  })
 })
 
 
@@ -61,13 +49,29 @@ app.delete('/api/notes/:id', (request, response) => {
 })
 
 app.post('/api/notes', (request, response) => {
-  const note = request.body // The body property contains the data sent by the client
-  console.log(note)
+  const body = request.body // The body property contains the data sent by the client
+
+
+
+  const note = {
+    id: Math.floor(Math.random() * 1000), // Generate a random id between 1 and 1000
+    content: body.content,
+    important: body.important || false 
+  }
+
+  notes = notes.concat(note) // Add the new note to the notes array
+
+
   response.json(note)   // The response is sent back to the client as a JSON object
+
+
 })
 
 
 
-const PORT = 4000
+
+const PORT =  process.env.PORT || 3001 // The port is set to the value of the PORT environment variable or 3001 if not set
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
+
+
