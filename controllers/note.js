@@ -1,22 +1,8 @@
-require("dotenv").config(); // This line loads environment variables from a .env file into process.env
-const express = require('express');
 
-const cors = require('cors');
-const morgan = require('morgan');
+const notesRouter  = require('express').Router(); // Import the express router
+const Note = require('../models/note.js'); // Import the Note model
 
-const app = express();
-app.use(express.static('dist'))
-app.use(cors());
-app.use(express.json()) // This middleware is used to parse the JSON data sent to the server
-const Note = require('./models/note.js')
-
-app.get('/', (request, response) => {
-  // send method is used to send the HTTP response
-  // response.send('<h1>Hello World!</h1>') // send a string
-  response.send('<h1>Hello World!</h1>')
-})
-
-app.get('/api/notes', (request, response) => {
+notesRouter.get('/', (request, response) => {
   Note.find({})
   .then(notes => {
     response.json(notes) // send the notes array as a JSON response
@@ -24,7 +10,7 @@ app.get('/api/notes', (request, response) => {
 })
 
 
-app.get('/api/notes/:id', (request, response, next) => {
+notesRouter.get('/:id', (request, response, next) => {
   Note.findById(request.params.id) // Find a note by its ID
   .then(note => {
     if(note){
@@ -34,11 +20,9 @@ app.get('/api/notes/:id', (request, response, next) => {
     }
   })
   .catch(error => next(error)) // If an error occurs, pass it to the next middleware
-
 })
 
-
-app.post('/api/notes', (request, response) => {
+notesRouter.post('/', (request, response) => {
   const body = request.body // The body property contains the data sent by the client
 
   if(body.content === undefined){ // If the content property is not defined, we return a 400 status code
@@ -66,7 +50,7 @@ app.post('/api/notes', (request, response) => {
 })
 
 
-app.put('/api/notes/:id',(request,response,next)=>{
+notesRouter.put('/:id',(request,response,next)=>{
 
   const body = request.body // The body property contains the data sent by the client
   const note = {
@@ -83,7 +67,7 @@ app.put('/api/notes/:id',(request,response,next)=>{
 
 
 
-app.delete('/api/notes/:id', (request, response, next) => {
+notesRouter.delete('/:id', (request, response, next) => {
 
   Note.findByIdAndDelete(request.params.id)
   .then(result => {
@@ -93,29 +77,4 @@ app.delete('/api/notes/:id', (request, response, next) => {
   
 })
 
-
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
-// controlador de solicitudes con endpoint desconocido
-app.use(unknownEndpoint)
-
-
-
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } 
-  next(error)
-}
-// este debe ser el último middleware cargado, ¡también todas las rutas deben ser registrada antes que esto!
-app.use(errorHandler)
-
-
-const PORT =  process.env.PORT || 3001 // The port is set to the value of the PORT environment variable or 3001 if not set
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
-
-
+module.exports = notesRouter; // Export the notesRouter so it can be used in other files
