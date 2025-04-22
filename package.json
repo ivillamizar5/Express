@@ -1,7 +1,7 @@
 {
   "name": "express",
   "version": "1.0.0",
-  "main": "iniciando.js",
+  "main": "index.js",
   "scripts": {
     "build:ui": "rm -rf dist && cd ../iniciando/empezarDeNuevo/Empezando && npm run build && cp -r dist",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
